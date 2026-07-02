@@ -25,11 +25,17 @@ export interface McpLockServer {
   tools: McpLockTool[];
 }
 
+export interface McpLockfilePublisher {
+  monitoringUrl?: string;
+  compatibilityReceiptUrl?: string;
+}
+
 export interface McpLockfileV1 {
   lockfileVersion: typeof LOCKFILE_VERSION;
   generator: string;
   generatedAt: string;
   servers: McpLockServer[];
+  publisher?: McpLockfilePublisher;
 }
 
 function slugServerName(key: string): string {
@@ -132,14 +138,27 @@ export function buildLockServer(input: {
   };
 }
 
+function normalizePublisher(raw: unknown): McpLockfilePublisher | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const doc = raw as Record<string, unknown>;
+  const publisher: McpLockfilePublisher = {};
+  if (typeof doc.monitoringUrl === "string" && doc.monitoringUrl.trim()) {
+    publisher.monitoringUrl = doc.monitoringUrl.trim();
+  }
+  if (typeof doc.compatibilityReceiptUrl === "string" && doc.compatibilityReceiptUrl.trim()) {
+    publisher.compatibilityReceiptUrl = doc.compatibilityReceiptUrl.trim();
+  }
+  return Object.keys(publisher).length ? publisher : undefined;
+}
+
 export function buildLockfile(
   servers: McpLockServer[],
-  opts?: { generator?: string; generatedAt?: string },
+  opts?: { generator?: string; generatedAt?: string; publisher?: McpLockfilePublisher },
 ): McpLockfileV1 {
   if (!servers.length) {
     throw new LockfileError("lockfile requires at least one server");
   }
-  return {
+  const lockfile: McpLockfileV1 = {
     lockfileVersion: LOCKFILE_VERSION,
     generator: opts?.generator ?? LOCKFILE_GENERATOR,
     generatedAt: opts?.generatedAt ?? new Date().toISOString(),
@@ -151,6 +170,8 @@ export function buildLockfile(
       }))
       .sort((a, b) => a.name.localeCompare(b.name)),
   };
+  if (opts?.publisher) lockfile.publisher = opts.publisher;
+  return lockfile;
 }
 
 export function parseLockfile(raw: unknown): McpLockfileV1 {
@@ -183,16 +204,20 @@ export function parseLockfile(raw: unknown): McpLockfileV1 {
       tools: Array.isArray(entry.tools) ? entry.tools : [],
     });
   });
-  return buildLockfile(servers, {
-    generator: typeof doc.generator === "string" ? doc.generator : LOCKFILE_GENERATOR,
-    generatedAt: typeof doc.generatedAt === "string" ? doc.generatedAt : new Date(0).toISOString(),
-  });
+  return {
+    ...buildLockfile(servers, {
+      generator: typeof doc.generator === "string" ? doc.generator : LOCKFILE_GENERATOR,
+      generatedAt: typeof doc.generatedAt === "string" ? doc.generatedAt : new Date(0).toISOString(),
+      publisher: normalizePublisher(doc.publisher),
+    }),
+  };
 }
 
 export function serializeLockfile(lockfile: McpLockfileV1): string {
   const normalized = buildLockfile(lockfile.servers, {
     generator: lockfile.generator,
     generatedAt: lockfile.generatedAt,
+    publisher: lockfile.publisher,
   });
   return `${JSON.stringify(normalized, null, 2)}\n`;
 }

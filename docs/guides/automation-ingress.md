@@ -63,6 +63,10 @@ OpenAPI watch + ingress bundle: [n8n OpenAPI watch guide](n8n-openapi-watch.md).
 
 Reference: [validate API](../reference/validate-api.md) · Gate ladder: [L2.5 Runtime ingress](../policies/gate-ladder.md) · Agent harness: [agent output contracts](agent-output-contracts.md)
 
+## FuseGuard ingress hook
+
+When FuseGuard wraps agent tool loops with the ingress validate hook enabled, a blocked payload trips with reason **`ingress_validate_blocked`**. Trips appear in the hosted console under **Agents → Fuse activity** — pair with this playbook and the [automation ingress solution](https://driftguard.org/solutions/automation-ingress) for end-to-end coverage (producer watch + runtime gate + agent policy).
+
 ## Positioning boundaries
 
 - [Confluent Schema Registry coexistence](confluent-coexistence.md) — partner, not competitor
