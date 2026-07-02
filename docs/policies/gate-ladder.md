@@ -170,7 +170,7 @@ Change-management guide: [schemasync-prompt-schema-alignment.md](../guides/schem
 | Stage | Gates | Typical trigger |
 |-------|-------|-------------------|
 | **1** | Free diff + CI hook | First API or MCP integration |
-| **2** | Runtime ingress gate (`validate`) | Webhook / n8n ingress before writes; [agent output contracts](../guides/agent-output-contracts.md) for LLM JSON + tool-call envelopes |
+| **2** | Runtime ingress gate (`validate`) | Webhook / n8n ingress before writes; Pro+ [ingress profile registry](https://driftguard.org/solutions/automation-ingress) for hosted `profileId`; [agent output contracts](../guides/agent-output-contracts.md) for LLM JSON + tool-call envelopes |
 | **2b** | MockDrift | Flaky mocks; need scenario replay |
 | **3** | FuseGuard | Agent cost/runaway loops |
 | **3b** | A2A Contract Watch | A2A Agent Card vs MCP skew (multi-agent) |

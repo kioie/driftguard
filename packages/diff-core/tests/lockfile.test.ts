@@ -61,4 +61,28 @@ describe("lockfile normalizer", () => {
     const schema = parsed.servers[0]?.tools[0]?.inputSchema as { properties?: Record<string, unknown> };
     assert.deepEqual(Object.keys(schema.properties ?? {}), ["a", "z"]);
   });
+
+  it("LOCK-PUB-001: round-trips publisher metadata", () => {
+    const lockfile = buildLockfile(
+      [
+        buildLockServer({
+          name: "demo",
+          url: "https://mcp.example.com/mcp",
+          tools: [{ name: "search", inputSchema: { type: "object" } }],
+        }),
+      ],
+      {
+        publisher: {
+          monitoringUrl: "https://driftguard.org/api/watches/w1/status",
+          compatibilityReceiptUrl: "https://driftguard.org/api/drift/events/e1/receipt",
+        },
+      },
+    );
+    const parsed = parseLockfile(JSON.parse(serializeLockfile(lockfile)));
+    assert.equal(parsed.publisher?.monitoringUrl, "https://driftguard.org/api/watches/w1/status");
+    assert.equal(
+      parsed.publisher?.compatibilityReceiptUrl,
+      "https://driftguard.org/api/drift/events/e1/receipt",
+    );
+  });
 });
