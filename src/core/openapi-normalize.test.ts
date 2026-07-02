@@ -67,6 +67,68 @@ describe("normalizeOpenApiSpec", () => {
     assert.ok(ops["GET /pets"]?.responseSchema);
   });
 
+  it("normalizes an Xquik OpenAPI 3.1 search operation", () => {
+    const ops = normalizeOpenApiSpec({
+      openapi: "3.1.0",
+      info: { title: "Xquik API", version: "1.0" },
+      security: [{ apiKey: [] }],
+      components: {
+        securitySchemes: {
+          apiKey: {
+            type: "apiKey",
+            name: "X-API-Key",
+            in: "header",
+          },
+        },
+      },
+      paths: {
+        "/api/v1/x/tweets/search": {
+          get: {
+            operationId: "searchTweets",
+            parameters: [
+              { name: "q", in: "query", required: true, schema: { type: "string" } },
+              { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100 } },
+            ],
+            responses: {
+              "200": {
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        data: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              id: { type: "string" },
+                              text: { type: "string" },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const op = ops["GET /api/v1/x/tweets/search"];
+    const properties = op?.parameters.properties as Record<string, unknown> | undefined;
+
+    assert.equal(op?.operationId, "searchTweets");
+    assert.deepEqual(op?.parameters.required, ["q"]);
+    assert.ok(properties?.q);
+    assert.ok(properties?.limit);
+    assert.ok(op?.responses["200"]);
+    assert.equal(op?.responseSchema.type, "object");
+    assert.equal(op?.security.type, "array");
+  });
+
   it("throws on non-object spec", () => {
     assert.throws(() => normalizeOpenApiSpec(null), /JSON object/);
   });
