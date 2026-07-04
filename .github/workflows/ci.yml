@@ -42,6 +42,8 @@ jobs:
             echo "::error::ci.actionRef mismatch: got '$ACTION_REF', expected '$EXPECTED'"
             exit 1
           fi
+      - name: Marketplace listing readiness (DIST-001)
+        run: node scripts/check-marketplace-readiness.mjs
       - name: Drift detection smoke
         if: github.event_name == 'pull_request'
         run: |

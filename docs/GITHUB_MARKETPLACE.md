@@ -38,11 +38,11 @@ uses: Drift-Guard/driftguard/.github/actions/drift-coverage-preview@v0.3.3
 ### Before first Marketplace publish
 
 - [x] **OSS-2:** Publish `@drift-guard/driftguard` — tag `v*` with `NPM_TOKEN` secret (see `.github/workflows/release.yml`) — **shipped** (`v0.3.4`)
-- [ ] Create Marketplace listing from repo **Releases → Publish Action to Marketplace** (or github.com/marketplace/new)
-- [ ] Listing description: hook → preview → Pro gate funnel; link to `docs/CI.md`
-- [ ] Category: **Code quality** or **Monitoring**
+- [ ] Create Marketplace listing from repo **Releases → Publish Action to Marketplace** (or github.com/marketplace/new) — **Pending Review** (manual GitHub UI)
+- [x] Listing description: hook → preview → Pro gate funnel; link to `docs/CI.md` — [docs/marketplace/LISTING-COPY.md](./marketplace/LISTING-COPY.md)
+- [ ] Category: **Code quality** or **Monitoring** — set at publish time (see LISTING-COPY.md)
 - [x] Verify npm package `@drift-guard/driftguard` publishes on every tag (release workflow `publish-npm` job; requires `NPM_TOKEN`)
-- [ ] Add Marketplace badge to README after publish
+- [ ] Add Marketplace badge to README after publish — snippet in [docs/marketplace/LISTING-COPY.md](./marketplace/LISTING-COPY.md)
 - [x] Pin all docs/examples to latest tag (`@v0.3.3`)
 - [ ] Optional: verified creator / org transfer if listing under company account
 
