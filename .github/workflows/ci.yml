@@ -33,6 +33,15 @@ jobs:
         run: bash .github/scripts/check-coverage.sh 60
       - name: npm audit (production)
         run: npm audit --audit-level=high --omit=dev
+      - name: Marketplace version sync
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          ACTION_REF=$(node -e "require('./dist/cli/version.js').printVersionJson()" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).ci.actionRef")
+          EXPECTED="Drift-Guard/driftguard/.github/actions/drift-diff@v${VERSION}"
+          if [ "$ACTION_REF" != "$EXPECTED" ]; then
+            echo "::error::ci.actionRef mismatch: got '$ACTION_REF', expected '$EXPECTED'"
+            exit 1
+          fi
       - name: Drift detection smoke
         if: github.event_name == 'pull_request'
         run: |

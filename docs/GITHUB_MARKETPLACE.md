@@ -37,11 +37,11 @@ uses: Drift-Guard/driftguard/.github/actions/drift-coverage-preview@v0.3.3
 
 ### Before first Marketplace publish
 
-- [ ] **OSS-2:** Publish `@drift-guard/driftguard` — tag `v*` with `NPM_TOKEN` secret (see `.github/workflows/release.yml`)
+- [x] **OSS-2:** Publish `@drift-guard/driftguard` — tag `v*` with `NPM_TOKEN` secret (see `.github/workflows/release.yml`) — **shipped** (`v0.3.4`)
 - [ ] Create Marketplace listing from repo **Releases → Publish Action to Marketplace** (or github.com/marketplace/new)
 - [ ] Listing description: hook → preview → Pro gate funnel; link to `docs/CI.md`
 - [ ] Category: **Code quality** or **Monitoring**
-- [ ] Verify npm package `@drift-guard/driftguard` publishes on every tag (release workflow `publish-npm` job; requires `NPM_TOKEN`)
+- [x] Verify npm package `@drift-guard/driftguard` publishes on every tag (release workflow `publish-npm` job; requires `NPM_TOKEN`)
 - [ ] Add Marketplace badge to README after publish
 - [x] Pin all docs/examples to latest tag (`@v0.3.3`)
 - [ ] Optional: verified creator / org transfer if listing under company account
@@ -49,7 +49,7 @@ uses: Drift-Guard/driftguard/.github/actions/drift-coverage-preview@v0.3.3
 ### Post-launch
 
 - [x] Action smoke in CI covers `drift-coverage-preview` with `scan-paths` (not only `drift-diff`)
-- [ ] Marketplace version sync with `driftguard version --json` → `ci.actionRef`
+- [x] Marketplace version sync with `driftguard version --json` → `ci.actionRef` — CI check in `ci.yml`
 
 ---
 
