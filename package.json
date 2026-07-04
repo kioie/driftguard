@@ -45,6 +45,7 @@
     "check:agents-yaml": "npm run build && node scripts/check-agents-yaml.mjs",
     "check:npm-publish": "node scripts/npm-publish-prep.mjs",
     "check:server-json": "node scripts/check-server-json.mjs",
+    "check:marketplace-readiness": "node scripts/check-marketplace-readiness.mjs",
     "test": "node --import tsx --test 'src/**/*.test.ts'",
     "test:coverage": "c8 --reporter=text --reporter=lcov --include='src/core/**' --include='src/mcp/**' node --import tsx --test 'src/**/*.test.ts'",
     "ci:local": "bash scripts/ci-local.sh",
