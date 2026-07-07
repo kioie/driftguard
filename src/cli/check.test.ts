@@ -55,10 +55,10 @@ describe("check.ts CLI routing", () => {
     assert.match(result.stdout, /driftguard diff/);
   });
 
-  it("prints usage for an unknown command", () => {
+  it("exits non-zero for an unknown command", () => {
     const result = runCheck("not-a-command");
-    assert.equal(result.status, 0);
-    assert.match(result.stdout, /Usage:/);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /unknown command/);
   });
 
   it("routes lint-agents on example manifest to exit 0", () => {
@@ -117,5 +117,49 @@ describe("check.ts CLI routing", () => {
   it("CLI-RT-002: lock unknown flag → exit 2", () => {
     const result = runCheck("lock", "--not-a-flag");
     assert.equal(result.status, 2);
+  });
+
+  it("prints help for --help and exits 0", () => {
+    const result = runCheck("--help");
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Usage:/);
+    assert.match(result.stdout, /driftguard diff/);
+  });
+
+  it("prints help for -h and exits 0", () => {
+    const result = runCheck("-h");
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Usage:/);
+  });
+
+  it("prints help for help subcommand and exits 0", () => {
+    const result = runCheck("help");
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Usage:/);
+  });
+
+  it("prints help with no args and exits 0", () => {
+    const result = runCheck();
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Usage:/);
+  });
+
+  it("routes --version to version output", () => {
+    const result = runCheck("--version");
+    assert.equal(result.status, 0);
+    assert.equal(result.stdout.trim(), VERSION);
+  });
+
+  it("routes -v to version output", () => {
+    const result = runCheck("-v");
+    assert.equal(result.status, 0);
+    assert.equal(result.stdout.trim(), VERSION);
+  });
+
+  it("exits 2 with error on unknown command", () => {
+    const result = runCheck("not-a-real-command");
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /unknown command 'not-a-real-command'/);
+    assert.match(result.stderr, /--help/);
   });
 });

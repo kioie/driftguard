@@ -10,7 +10,58 @@ async function readFilesJson(): Promise<string> {
   return readFilesJsonForCi(args[0]);
 }
 
+const KNOWN_COMMANDS = new Set([
+  "diff", "coverage-preview", "assert-coverage", "assert-a2a-coverage",
+  "validate", "openapi-diff", "openapi-changelog", "login", "init",
+  "lint-agents", "lint-harness", "doctor", "adopt", "manifest", "lock",
+  "check", "version", "mcp",
+]);
+
+function printHelp(): void {
+  console.log(`DriftGuard — open-source local schema diff + MCP client
+
+Usage:
+  driftguard diff '<before-json>' '<after-json>'          Free — JSON schema diff
+  driftguard openapi-diff base.yaml target.yaml [--remote]   Remote save + local diff
+  driftguard openapi-changelog base.yaml target.yaml       Release notes from OpenAPI diff
+  driftguard login --api-key dg_…                          Verify hosted API key
+  driftguard init [--yes]                                  Write .driftguard.yml
+  driftguard adopt [--level 1|2|3] [--dry-run]               Bootstrap Contract Manifest (.driftguard/)
+  driftguard doctor [bundleDir] [--json] [--check-hosted]    Manifest health scorecard
+  driftguard manifest lockfile-path                          Print lockfile path from manifest
+  driftguard manifest export --format lockfile-patch         Apply webhook lockfile patch (CM6)
+  driftguard coverage-preview                              Free — scan repo + console links
+  driftguard assert-coverage                               Gate — Pro key or trial (1 endpoint)
+  driftguard assert-a2a-coverage [path]                    Gate — manifest watches registered (Pro key)
+  driftguard lint-agents [path]                            Validate .driftguard/agents.yaml (offline)
+  driftguard lock [--url URL | --config mcp.json]          Snapshot MCP tools/list to driftguard-lock.json
+  driftguard check [--lock driftguard-lock.json]           Diff live MCP catalog vs lockfile (offline)
+  driftguard validate --profile p.json --payload e.json   Free — ingress payload gate
+  driftguard version [--json]
+  driftguard mcp
+
+Global flags:
+  -h, --help       Show this help
+  -v, --version    Print version and exit
+
+CI funnel: https://github.com/Drift-Guard/driftguard/blob/main/docs/CI.md
+Trial: ${HOSTED_TRIAL}
+Pricing: ${HOSTED_PRICING}
+`);
+}
+
 async function main(): Promise<void> {
+  if (command === undefined || command === "--help" || command === "-h" || command === "help") {
+    printHelp();
+    return;
+  }
+
+  if (command === "--version" || command === "-v") {
+    const { printVersionPlain } = await import("./version.js");
+    printVersionPlain();
+    return;
+  }
+
   if (command === "diff") {
     const { diffSchemas, inferSchema } = await import("../core/diff.js");
     const beforeResult = parseJsonString(args[0], "before JSON");
@@ -159,32 +210,11 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(`DriftGuard — open-source local schema diff + MCP client
-
-Usage:
-  driftguard diff '<before-json>' '<after-json>'          Free — JSON schema diff
-  driftguard openapi-diff base.yaml target.yaml [--remote]   Remote save + local diff
-  driftguard openapi-changelog base.yaml target.yaml       Release notes from OpenAPI diff
-  driftguard login --api-key dg_…                          Verify hosted API key
-  driftguard init [--yes]                                  Write .driftguard.yml
-  driftguard adopt [--level 1|2|3] [--dry-run]               Bootstrap Contract Manifest (.driftguard/)
-  driftguard doctor [bundleDir] [--json] [--check-hosted]    Manifest health scorecard
-  driftguard manifest lockfile-path                          Print lockfile path from manifest
-  driftguard manifest export --format lockfile-patch         Apply webhook lockfile patch (CM6)
-  driftguard coverage-preview                              Free — scan repo + console links
-  driftguard assert-coverage                               Gate — Pro key or trial (1 endpoint)
-  driftguard assert-a2a-coverage [path]                    Gate — manifest watches registered (Pro key)
-  driftguard lint-agents [path]                            Validate .driftguard/agents.yaml (offline)
-  driftguard lock [--url URL | --config mcp.json]          Snapshot MCP tools/list to driftguard-lock.json
-  driftguard check [--lock driftguard-lock.json]           Diff live MCP catalog vs lockfile (offline)
-  driftguard validate --profile p.json --payload e.json   Free — ingress payload gate
-  driftguard version [--json]
-  driftguard mcp
-
-CI funnel: https://github.com/Drift-Guard/driftguard/blob/main/docs/CI.md
-Trial: ${HOSTED_TRIAL}
-Pricing: ${HOSTED_PRICING}
-`);
+  if (!KNOWN_COMMANDS.has(command)) {
+    console.error(`driftguard: unknown command '${command}'`);
+    console.error(`Run 'driftguard --help' for usage.`);
+    process.exit(2);
+  }
 }
 
 main().catch((err) => {
