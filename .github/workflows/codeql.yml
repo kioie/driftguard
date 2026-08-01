@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@v4.37.3
         with:
           languages: javascript-typescript
       - uses: actions/setup-node@v6
@@ -42,4 +42,4 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@v4.37.3
