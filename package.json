@@ -59,7 +59,7 @@
     "@drift-guard/diff-core": "file:packages/diff-core",
     "@modelcontextprotocol/sdk": "^1.27.0",
     "yaml": "^2.9.0",
-    "zod": "^3.24.2"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
